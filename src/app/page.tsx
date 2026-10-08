@@ -3,139 +3,10 @@
 import { FormEvent, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import MunditelLogo from "./MunditelLogo";
+import RcsPhone from "./RcsPhone";
+import { t, LANGS, type Lang } from "./content";
 
 const DottedGlobe = dynamic(() => import("./DottedGlobe"), { ssr: false });
-
-// ─────────────────────────────────────────────────────────────────────────────
-// SELETOR DE IDIOMA — Português / Inglês
-//
-// Todos os textos do site ficam no objeto "t" abaixo, separados por idioma.
-// Para ADICIONAR um idioma novo (ex: francês), copie o bloco "en" inteiro,
-// cole como "fr", traduza os textos, e adicione { code: "fr", label: "FR", flag: "🇫🇷" }
-// no array LANGS. Pronto — o site passa a ter o novo idioma.
-// ─────────────────────────────────────────────────────────────────────────────
-
-type Lang = "en" | "pt";
-
-const LANGS: { code: Lang; label: string; flag: string }[] = [
-  { code: "en", label: "EN", flag: "🇬🇧" },
-  { code: "pt", label: "PT", flag: "🇧🇷" },
-];
-
-const t = {
-  en: {
-    nav: { services: "Services", voice: "Voice", sms: "SMS", did: "DID Numbers", about: "About", contact: "Contact" },
-    getStarted: "Get Started",
-    hero: {
-      tag: "International Telecom Solutions",
-      title1: "Connecting", title2: "Global Comms",
-      desc: "Munditel delivers wholesale voice, SMS, DID numbers and Local ANI routes for carriers, enterprises and global communication providers.",
-      quote: "Request a Quote", explore: "Explore Services",
-    },
-    heroServices: [
-      { name: "Voice", desc: "Wholesale & CLI" },
-      { name: "SMS", desc: "A2P & OTP" },
-      { name: "DID", desc: "Global numbers" },
-    ],
-    globe: { tag: "Worldwide Network", title: "Connecting continents", net: "Munditel · Global Network", countries: "120+ countries" },
-    numbers: {
-      tag: "Coverage", title: "By the numbers",
-      countries: "Countries", minutes: "Minutes / month", uptime: "Uptime SLA", support: "Support",
-    },
-    trustedBy: "Trusted by",
-    services: {
-      tag: "Our Services", title: "Everything your telecom operation needs",
-      voice: { title: "Wholesale Voice", desc: "CLI routes, Local ANI routes and voice termination with international coverage across 120+ countries.", features: ["Wholesale voice termination", "CLI & Local ANI routes", "High completion rates", "Real-time CDR reporting"] },
-      sms: { title: "SMS Solutions", desc: "A2P messaging, OTP delivery and bulk SMS for businesses, banks, fintechs and communication platforms.", features: ["A2P & OTP messaging", "Bulk SMS campaigns", "Two-way SMS support", "Delivery receipts"] },
-      did: { title: "DID Numbers & Routes", desc: "Global DID numbers and international routing solutions designed for telecom operators, carriers and enterprises.", features: ["DID numbers worldwide", "Inbound & outbound routes", "Number portability", "Tier-1 carrier connections"] },
-    },
-    why: {
-      tag: "Why Munditel", title1: "Carrier-grade infrastructure.", title2: "Built for scale.",
-      desc: "Munditel delivers the backbone for international communication — from wholesale voice routes to SMS delivery and DID numbers. Our mission is to give operators, carriers and enterprises access to reliable, high-performance telecom infrastructure at a global scale.",
-      cta: "Talk to our team",
-      items: [
-        { title: "Global Reach", desc: "Routes and numbers across 120+ countries and 6 continents." },
-        { title: "99.9% Uptime SLA", desc: "Carrier-grade redundancy with proactive 24/7 monitoring." },
-        { title: "Low Latency", desc: "Optimized international routing for crystal-clear voice calls." },
-        { title: "24/7 Support", desc: "Dedicated technical team ready around the clock." },
-      ],
-    },
-    cta: { tag: "Ready to connect?", title: "Scale your global communications today", desc: "Wholesale Voice · SMS Solutions · Global DID Numbers · Local ANI Routes", quote: "Request a Quote", wa: "Message on WhatsApp" },
-    contact: {
-      tag: "Contact", title: "Talk to our telecom team",
-      desc: "Get in touch to discuss international routes, wholesale voice, SMS solutions and carrier-grade communication services tailored to your needs.",
-      offer: "Services we offer",
-      tags: ["Wholesale Voice", "SMS A2P", "OTP", "DID Numbers", "Local ANI Routes", "Global Routing"],
-      name: "Name", namePh: "Your name",
-      company: "Company", companyPh: "Company name",
-      email: "Email", emailPh: "you@company.com",
-      country: "Country", countryPh: "e.g. Brazil",
-      phone: "Phone", phonePh: "+1 555 0000",
-      service: "Service of Interest", servicePh: "Select a service",
-      serviceOpts: ["Wholesale Voice", "SMS / A2P / OTP", "DID Numbers", "Local ANI Routes", "Global Routing", "Other"],
-      message: "Message", messagePh: "Tell us about your traffic volumes, destinations and requirements...",
-      send: "Send via WhatsApp", note: "Your message will open in WhatsApp ready to send.",
-    },
-    footer: { rights: "© 2026 Munditel. All rights reserved.", services: "Voice · SMS · DID Numbers · Global Routes" },
-    waMsg: { greeting: "Hello, Munditel team!", name: "Name", company: "Company", email: "Email", phone: "Phone", country: "Country", service: "Service of interest", message: "Message" },
-  },
-  pt: {
-    nav: { services: "Serviços", voice: "Voz", sms: "SMS", did: "Números DID", about: "Sobre", contact: "Contato" },
-    getStarted: "Começar",
-    hero: {
-      tag: "Soluções de Telecom Internacional",
-      title1: "Conectando", title2: "Comunicações Globais",
-      desc: "A Munditel oferece voz por atacado, SMS, números DID e rotas Local ANI para operadoras, empresas e provedores de comunicação global.",
-      quote: "Solicitar Orçamento", explore: "Ver Serviços",
-    },
-    heroServices: [
-      { name: "Voz", desc: "Atacado & CLI" },
-      { name: "SMS", desc: "A2P & OTP" },
-      { name: "DID", desc: "Números globais" },
-    ],
-    globe: { tag: "Rede Mundial", title: "Conectando continentes", net: "Munditel · Rede Global", countries: "120+ países" },
-    numbers: {
-      tag: "Cobertura", title: "Em números",
-      countries: "Países", minutes: "Minutos / mês", uptime: "Disponibilidade", support: "Suporte",
-    },
-    trustedBy: "Confiado por",
-    services: {
-      tag: "Nossos Serviços", title: "Tudo o que sua operação de telecom precisa",
-      voice: { title: "Voz por Atacado", desc: "Rotas CLI, rotas Local ANI e terminação de voz com cobertura internacional em mais de 120 países.", features: ["Terminação de voz por atacado", "Rotas CLI & Local ANI", "Altas taxas de completamento", "Relatórios CDR em tempo real"] },
-      sms: { title: "Soluções de SMS", desc: "Mensagens A2P, entrega de OTP e SMS em massa para empresas, bancos, fintechs e plataformas de comunicação.", features: ["Mensagens A2P & OTP", "Campanhas de SMS em massa", "Suporte a SMS bidirecional", "Confirmações de entrega"] },
-      did: { title: "Números DID & Rotas", desc: "Números DID globais e soluções de roteamento internacional projetadas para operadoras, transportadoras e empresas.", features: ["Números DID no mundo todo", "Rotas de entrada & saída", "Portabilidade numérica", "Conexões com operadoras Tier-1"] },
-    },
-    why: {
-      tag: "Por que a Munditel", title1: "Infraestrutura de nível operadora.", title2: "Feita para escalar.",
-      desc: "A Munditel oferece a espinha dorsal da comunicação internacional — de rotas de voz por atacado à entrega de SMS e números DID. Nossa missão é dar a operadoras e empresas acesso a uma infraestrutura de telecom confiável e de alta performance em escala global.",
-      cta: "Fale com nossa equipe",
-      items: [
-        { title: "Alcance Global", desc: "Rotas e números em mais de 120 países e 6 continentes." },
-        { title: "99,9% de Disponibilidade", desc: "Redundância de nível operadora com monitoramento proativo 24/7." },
-        { title: "Baixa Latência", desc: "Roteamento internacional otimizado para chamadas de voz nítidas." },
-        { title: "Suporte 24/7", desc: "Equipe técnica dedicada, pronta a qualquer hora." },
-      ],
-    },
-    cta: { tag: "Pronto para conectar?", title: "Escale suas comunicações globais hoje", desc: "Voz por Atacado · Soluções de SMS · Números DID Globais · Rotas Local ANI", quote: "Solicitar Orçamento", wa: "Falar no WhatsApp" },
-    contact: {
-      tag: "Contato", title: "Fale com nossa equipe de telecom",
-      desc: "Entre em contato para discutir rotas internacionais, voz por atacado, soluções de SMS e serviços de comunicação de nível operadora sob medida.",
-      offer: "Serviços que oferecemos",
-      tags: ["Voz por Atacado", "SMS A2P", "OTP", "Números DID", "Rotas Local ANI", "Roteamento Global"],
-      name: "Nome", namePh: "Seu nome",
-      company: "Empresa", companyPh: "Nome da empresa",
-      email: "E-mail", emailPh: "voce@empresa.com",
-      country: "País", countryPh: "ex: Brasil",
-      phone: "Telefone", phonePh: "+55 11 90000-0000",
-      service: "Serviço de Interesse", servicePh: "Selecione um serviço",
-      serviceOpts: ["Voz por Atacado", "SMS / A2P / OTP", "Números DID", "Rotas Local ANI", "Roteamento Global", "Outro"],
-      message: "Mensagem", messagePh: "Conte sobre seus volumes de tráfego, destinos e necessidades...",
-      send: "Enviar pelo WhatsApp", note: "Sua mensagem abrirá no WhatsApp pronta para enviar.",
-    },
-    footer: { rights: "© 2026 Munditel. Todos os direitos reservados.", services: "Voz · SMS · Números DID · Rotas Globais" },
-    waMsg: { greeting: "Olá, equipe Munditel!", name: "Nome", company: "Empresa", email: "E-mail", phone: "Telefone", country: "País", service: "Serviço de interesse", message: "Mensagem" },
-  },
-};
 
 export default function Home() {
   const whatsappNumber = "554199410601";
@@ -143,6 +14,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [scrolled, setScrolled] = useState(false);
   const [lang, setLang] = useState<Lang>("en");
+  const [langOpen, setLangOpen] = useState(false);
 
   const c = t[lang]; // textos do idioma atual
 
@@ -188,28 +60,44 @@ ${message}`;
     { href: "#voice", label: c.nav.voice },
     { href: "#sms", label: c.nav.sms },
     { href: "#did", label: c.nav.did },
+    { href: "#rcs", label: c.nav.rcs },
     { href: "#about", label: c.nav.about },
     { href: "#contact", label: c.nav.contact },
   ];
 
-  // Botãozinho do seletor de idioma (reutilizado no desktop e mobile)
-  const LangSwitcher = ({ compact = false }: { compact?: boolean }) => (
-    <div className="flex items-center gap-1 rounded-lg p-1" style={{ background: "#0a1628", border: "1px solid #1e3a5f" }}>
-      {LANGS.map((l) => (
-        <button
-          key={l.code}
-          onClick={() => setLang(l.code)}
-          className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-semibold transition-colors"
-          style={{
-            background: lang === l.code ? "#2563eb" : "transparent",
-            color: lang === l.code ? "#fff" : "#94a3b8",
-          }}
-          aria-label={l.label}
-        >
-          <span style={{ fontSize: 14 }}>{l.flag}</span>
-          {!compact && <span>{l.label}</span>}
-        </button>
-      ))}
+  // Seletor de idioma como menu suspenso (dropdown) com bandeira + nome
+  const current = LANGS.find((l) => l.code === lang) || LANGS[0];
+  const renderLangSwitcher = (compact = false) => (
+    <div style={{ position: "relative" }}>
+      <button
+        onClick={() => setLangOpen((o) => !o)}
+        className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold transition-colors"
+        style={{ background: "#0a1628", border: "1px solid #1e3a5f", color: "#e2e8f0" }}
+        aria-label="Idioma"
+        aria-expanded={langOpen}
+      >
+        <span style={{ fontSize: 16 }}>{current.flag}</span>
+        {!compact && <span>{current.name}</span>}
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" style={{ transform: langOpen ? "rotate(180deg)" : "none", transition: "transform 0.2s" }} aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+      </button>
+      {langOpen && (
+        <>
+          <div style={{ position: "fixed", inset: 0, zIndex: 40 }} onClick={() => setLangOpen(false)} />
+          <div style={{ position: "absolute", top: "calc(100% + 6px)", right: 0, zIndex: 50, background: "#0a1628", border: "1px solid #1e3a5f", borderRadius: 12, padding: 6, minWidth: 160, boxShadow: "0 10px 30px rgba(0,0,0,0.5)" }}>
+            {LANGS.map((l) => (
+              <button
+                key={l.code}
+                onClick={() => { setLang(l.code); setLangOpen(false); }}
+                className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg text-sm font-medium transition-colors"
+                style={{ background: lang === l.code ? "#2563eb" : "transparent", color: lang === l.code ? "#fff" : "#94a3b8", textAlign: "left" }}
+              >
+                <span style={{ fontSize: 16 }}>{l.flag}</span>
+                <span>{l.name}</span>
+              </button>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 
@@ -250,6 +138,8 @@ ${message}`;
         .nav-link:hover { color: #e2e8f0; }
         .nav-link::after { content: ""; position: absolute; bottom: -2px; left: 0; width: 0; height: 1px; background: #3b82f6; transition: width 0.2s; }
         .nav-link:hover::after { width: 100%; }
+        .nav-pill { color: #94a3b8; font-size: 14px; padding: 7px 15px; border-radius: 9999px; white-space: nowrap; transition: color 0.2s, background 0.2s; }
+        .nav-pill:hover { color: #fff; background: rgba(37,99,235,0.25); }
         .blob { position: absolute; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
         .blob-glow { position: absolute; border-radius: 50%; filter: blur(40px); animation: glow-pulse 5s ease-in-out infinite; z-index: 0; }
         .blob-content { position: relative; z-index: 2; }
@@ -274,16 +164,16 @@ ${message}`;
       <header className="sticky top-0 z-50 transition-all duration-300" style={{ background: scrolled ? "rgba(6,13,26,0.97)" : "rgba(6,13,26,0.85)", borderBottom: "1px solid #0f2340", backdropFilter: "blur(12px)" }}>
         <div className="max-w-7xl mx-auto px-5 md:px-8 py-5 flex justify-between items-center">
           <MunditelLogo height={72} showText={true} animateOnce={false} />
-          <nav className="hidden md:flex gap-7">
-            {navLinks.map((l) => (<a key={l.href} href={l.href} className="nav-link">{l.label}</a>))}
+          <nav className="hidden md:flex items-center gap-1 px-2 py-1.5 rounded-full" style={{ background: "rgba(10,22,40,0.7)", border: "1px solid #1e3a5f", backdropFilter: "blur(8px)" }}>
+            {navLinks.map((l) => (<a key={l.href} href={l.href} className="nav-pill">{l.label}</a>))}
           </nav>
           <div className="hidden md:flex items-center gap-3">
-            <LangSwitcher />
+            {renderLangSwitcher(false)}
             <a href={`https://wa.me/${whatsappNumber}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-green-400 border border-green-900 hover:border-green-500 px-4 py-2 rounded-lg transition-colors"><WhatsAppIcon /> WhatsApp</a>
             <a href="#contact" className="bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold px-5 py-2 rounded-lg transition-colors">{c.getStarted}</a>
           </div>
           <div className="md:hidden flex items-center gap-2">
-            <LangSwitcher compact />
+            {renderLangSwitcher(true)}
             <button className="p-2" onClick={() => setMenuOpen(!menuOpen)} aria-label="Menu">
               <div className="space-y-1.5">
                 <span className={`block h-0.5 w-6 bg-slate-300 transition-all ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
@@ -400,6 +290,9 @@ ${message}`;
           </div>
         </div>
       </section>
+
+      {/* ── SEÇÃO RCS — CELULAR ANIMADO ── */}
+      <RcsPhone content={c.rcs} />
 
       <section id="about" className="border-t border-slate-800" style={{ background: "#050c18" }}>
         <div className="max-w-7xl mx-auto px-5 md:px-8 py-20 section-pad">
